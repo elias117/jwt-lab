@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const cors = require("cors");
 require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -12,6 +13,10 @@ const app = express();
 app.use(express.json());
 // ✅ Middleware #2: parse Cookie header into req.cookies
 app.use(cookieParser());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 
 function hashToken(token) {
     return crypto.createHash("sha256").update(token).digest("hex"); // this will hash a token
