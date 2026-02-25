@@ -5,6 +5,7 @@ function App() {
     const [password, setPassword] = useState("");
     const [accessToken, setAccessToken] = useState(null);
     const [userData, setUserData] = useState(null);
+    const [error, setError] = useState(null);
     useEffect(() => {
         async function fetchMe() {
             if (accessToken) {
@@ -24,6 +25,7 @@ function App() {
 
     return (
         <div className="h-screen flex flex-col justify-center items-center gap-8">
+            <p> {error} </p>
             {!accessToken ? (
                 <form
                     className="flex flex-col justify-center items-center gap-4"
@@ -40,8 +42,14 @@ function App() {
                                 credentials: "include",
                             },
                         );
-                        const data = await response.json();
-                        setAccessToken(data.accessToken);
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            setError(errorData.error);
+                        } else {
+                            const data = await response.json();
+                            setAccessToken(data.accessToken);
+                            setError(null);
+                        }
                     }}
                 >
                     <input
@@ -67,9 +75,13 @@ function App() {
                 </form>
             ) : (
                 <>
-                    <p>You are logged in. Access Token is set to {accessToken}</p>
+                    <p>
+                        You are logged in. Access Token is set to {accessToken}
+                    </p>
                     {userData && (
-                        <p>User ID: {userData.sub}, Role: {userData.role}</p>
+                        <p>
+                            User ID: {userData.sub}, Role: {userData.role}
+                        </p>
                     )}
                     <button
                         className="bg-blue-500 text-white px-4 py-2 rounded"

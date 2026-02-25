@@ -66,9 +66,12 @@ app.post("/login", async (req, res) => {
     const password = req.body.password;
 
     const user = await prisma.user.findUnique({ where: { email } });
+    if(!user){
+        return res.status(401).json({ error: "Invalid user" });
+    }
     const passwordCheck = await bcrypt.compare(password, user.passwordHash);
     if (!passwordCheck) {
-        return res.status(401).json({ error: "Invalid credentials" });
+        return res.status(401).json({ error: "Invalid password" });
     }
 
     const accessToken = makeAccessToken(user);
